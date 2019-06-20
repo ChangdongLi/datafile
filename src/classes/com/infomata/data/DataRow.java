@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.regex.Pattern;
 
 /**
  * Object representing collection of data items contained within one
@@ -79,7 +80,42 @@ public class DataRow {
         items = new ArrayList();
         nf = format;
     }
-     
+
+    /**
+     * test if the string can be a number.
+     * @param numberString
+     * @return true if it can be a number otherwise false
+     */
+    public static boolean isNumber(String numberString){
+        if(numberString!=null){
+            numberString=numberString.trim();
+            if(Pattern.matches("^[-+]?([1-9]{1}[0-9]{0,}(\\.[0-9]{0,})?|0(\\.[0-9]{0,})?|\\.[0-9]{1,})$",
+                    numberString))
+                return true;
+        }
+        return false;
+    }
+    public static boolean prependWithApostrophe=true;
+    /**
+     * add apostrophe (‘) in the beginning of the cell containing = + - @ to prevent csv formula injection
+     * @param value
+     * @return a safe value
+     */
+    public static String cleanCsvData(String value){
+        if(!prependWithApostrophe) return value;
+        if(value==null) return value;
+        if(value.startsWith("+")||value.startsWith("-")){
+            if(isNumber(value)) {
+                return value;
+            }else{
+                return "'"+value;
+            }
+        }
+        if(value.startsWith("=")||value.startsWith("@")){
+            return "'"+value;
+        }
+        return value;
+    }
 
     /**
      * Adds a String datum to the next location
@@ -87,7 +123,7 @@ public class DataRow {
      * @param datum String datum item
      */
     public void add(String datum) {
-        items.add(datum);
+        items.add(cleanCsvData(datum));
     }
 
 
