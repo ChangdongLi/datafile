@@ -96,14 +96,19 @@ public class DataRow {
         return false;
     }
     public static boolean prependWithApostrophe=true;
+    public static boolean lenientInjectionFix=true;
     /**
      * add apostrophe (‘) in the beginning of the cell containing = + - @ to prevent csv formula injection
      * @param value
      * @return a safe value
      */
     public static String cleanCsvData(String value){
-        if(!prependWithApostrophe) return value;
         if(value==null) return value;
+
+        if(!prependWithApostrophe) return value;
+
+        if(lenientInjectionFix&&!value.startsWith("=")) return value;
+
         if(value.startsWith("+")||value.startsWith("-")){
             if(isNumber(value)) {
                 return value;
