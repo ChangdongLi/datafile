@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * @version $Revision: 1.2 $
  */
 public class DataRow {
-
+    public boolean cleaned=false;
     /**
      * column name to index reference table.
      */
@@ -128,7 +128,11 @@ public class DataRow {
      * @param datum String datum item
      */
     public void add(String datum) {
-        items.add(cleanCsvData(datum));
+        String tmp=cleanCsvData(datum);
+        if(tmp!=null&&!tmp.equals(datum)){
+            this.cleaned=true;
+        }
+        items.add(tmp);
     }
 
 
